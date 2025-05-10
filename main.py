@@ -6,6 +6,9 @@ from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout
+from flask import Flask, render_template, request, jsonify
+import re
+import base64
 
 # Step 1: Load CSV
 traffic_test = pd.read_csv("Test.csv")
@@ -37,14 +40,14 @@ for i in range(min(500, len(traffic_test))):
     labels.append(class_id)
 
 # Step 3: Show first few images
-plt.figure(figsize=(15,5))
-for i in range(len(images)):
-    plt.subplot(10,50,i+1)
-    plt.imshow(images[i])
-    plt.title(f"Class id: {labels[i]}")
-    plt.axis('off')
-plt.tight_layout()
-plt.show()
+# plt.figure(figsize=(15,5))
+# for i in range(len(images)):
+#     plt.subplot(10,50,i+1)
+#     plt.imshow(images[i])
+#     plt.title(f"Class id: {labels[i]}")
+#     plt.axis('off')
+# plt.tight_layout()
+# plt.show()
 
 # Step 4: Prepare for model
 images = np.array(images) / 255.0
@@ -157,9 +160,43 @@ for idx in indices:
     true_name = class_names.get(true_class_id, "Unknown")
     predicted_name = class_names.get(predicted_class_id, "Unknown")
 
-    plt.imshow(image)
-    plt.axis('off')
-    plt.title(f"True: {true_name} ({true_class_id})\nPredicted: {predicted_name} ({predicted_class_id})")
-    plt.show()
+    # plt.imshow(image)
+    # plt.axis('off')
+    # plt.title(f"True: {true_name} ({true_class_id})\nPredicted: {predicted_name} ({predicted_class_id})")
+    # plt.show()
 
     print(f"True label: {true_name} ({true_class_id}), Predicted: {predicted_name} ({predicted_class_id})")
+
+
+#Step 11 --> implementation of flask
+app = Flask(__name__)
+
+def preprocess_image(img_array):
+    img = cv2.cvtColor(img_array, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img,(32,32))
+    img = img /255.0
+    img = np.expand_dims(img, axis=0)
+    return img
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/predict", methods=["POST"])
+def predict_flask():
+    data = request.json['image']
+    img_data = re.sub('^data:image/.+;base64,', '', data)
+    img_bytes = base64.b64decode(img_data)
+    nparr = np.frombuffer(img_bytes, np.uint8)
+    img_array = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    processed_img = preprocess_image(img_array)
+    prediction = model.predict(processed_img)
+    preddicted_class_idx = np.argmax(prediction)
+    preddicted_class_id = encoder.classes_[preddicted_class_idx]
+    preddicted_label = class_names.get(preddicted_class_id, "Unknown")
+
+    return jsonify({"predictio": preddicted_label})
+
+if __name__ == "__main__":
+    app.run(debug=True)
