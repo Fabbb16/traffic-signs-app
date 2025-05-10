@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Sign Classifier</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="container main-container">
+        <div class="header text-center">
+            <h1 class="display-5 fw-bold"><i class="fas fa-traffic-light me-2"></i>Traffic Sign Classifier</h1>
+            <p class="lead">Upload an image of a traffic sign and get instant AI classification</p>
+        </div>
+
+        <div class="content-card">
+            <div class="upload-area" id="drop-area" onclick="document.getElementById('imageInput').click()">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <h3>Upload Image</h3>
+                <p>Drag & drop your image here or click to browse</p>
+                <input type="file" id="imageInput" accept="image/*" class="d-none" onchange="displayFileName()">
+                <p id="custom-file-label" class="mt-2">No file chosen</p>
+                <div id="imagePreview" class="text-center mt-3"></div>
+            </div>
+
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <button class="btn btn-predict" id="predictBtn" onclick="uploadAndPredict()">
+                    <i class="fas fa-search me-2"></i>Analyze Sign
+                </button>
+            </div>
+
+            <div class="result-card mt-4" id="resultCard">
+                <h4><i class="fas fa-info-circle me-2"></i>Classification Result</h4>
+                <p id="result" class="mb-0 fs-5"></p>
+            </div>
+
+            <div class="footer text-center">
+                <p>© 2025 Traffic Sign Classifier | AI-Powered Recognition System</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JS -->
+    <script src="static/script.js"></script>
+</body>
+</html>
